@@ -102,6 +102,9 @@ class DatabaseOperations(BaseDatabaseOperations):
 
     def convert_datetimefield_value(self, value, expression, connection, context):
         if value is not None:
+            # see https://github.com/michiya/django-pyodbc-azure/issues/58
+            if type(value) in (str, unicode):
+                value = datetime.datetime.strptime(value.split('.')[0], '%Y-%m-%d %H:%M:%S')
             if settings.USE_TZ:
                 value = timezone.make_aware(value, timezone.utc)
         return value
